@@ -1,14 +1,22 @@
 /Users/qcri_shammur/Tools/anaconda3/lib/python3.7/site-packages/sklearn/externals/joblib/__init__.py:15: DeprecationWarning: sklearn.externals.joblib is deprecated in 0.21 and will be removed in 0.23. Please import this functionality directly from joblib, which can be installed with: pip install joblib. If this warning is raised when loading pickled models, you may need to re-serialize those models with scikit-learn 0.21+.
   warnings.warn(msg, category=DeprecationWarning)
+/Users/qcri_shammur/Tools/anaconda3/lib/python3.7/site-packages/sklearn/metrics/classification.py:1439: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples.
+  'recall', 'true', average, warn_for)
 None
-              precision    recall  f1-score   support
+                            precision    recall  f1-score   support
 
-     NOT_OFF       0.94      0.95      0.95       821
-         OFF       0.77      0.71      0.74       179
+      business-and-economy       0.50      1.00      0.67         1
+        crime-war-conflict       1.00      0.50      0.67         2
+               environment       1.00      1.00      1.00         1
+                    health       1.00      1.00      1.00         1
+human-rights-press-freedom       0.00      0.00      0.00         0
+                    others       1.00      1.00      1.00         1
+                  politics       0.50      0.33      0.40         3
+                    sports       1.00      1.00      1.00         1
 
-    accuracy                           0.91      1000
-   macro avg       0.85      0.83      0.84      1000
-weighted avg       0.91      0.91      0.91      1000
+                  accuracy                           0.70        10
+                 macro avg       0.75      0.73      0.72        10
+              weighted avg       0.80      0.70      0.72        10
 
 time taken:
 0:00:01

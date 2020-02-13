@@ -34,7 +34,7 @@ def predict(loaded_model, tokenizer, label_encoder, data_in_file,data_out_file,d
     data = []
     ids=[]
     text_out_file=open(data_out_file,"w")
-    text_out_file.write("id\ttext\tclass_label\n");
+    text_out_file.write("id\ttext\tpredicted_class_label\n");
 
     data_x, ids_x = data_preparation.read_data_for_classification(data_in_file, delim)
 
@@ -53,7 +53,7 @@ def predict(loaded_model, tokenizer, label_encoder, data_in_file,data_out_file,d
             for lab, txt,idx in zip(result,data,ids):
                 # prob_per_class_dictionary = dict(zip(label_encoder.classes_, class_prob))
                 # prob = prob_per_class_dictionary.get(lab)
-                output_data=idx+"\t"+txt+"\t"+lab #+"\t"+str(prob)
+                output_data=idx+"\t"+txt+"\t"+map_labels(lab) #+"\t"+str(prob)
                 text_out_file.write(output_data+"\n");
             data=[]
         count=count+1
@@ -66,13 +66,13 @@ def predict(loaded_model, tokenizer, label_encoder, data_in_file,data_out_file,d
     for lab, txt, idx in zip(result, data, ids):
         # prob_per_class_dictionary = dict(zip(label_encoder.classes_, class_prob))
         # prob = prob_per_class_dictionary.get(lab)
-        output_data = idx+"\t"+txt + "\t" + lab #+ "\t" + str(prob)
+        output_data = idx+"\t"+txt + "\t" + map_labels(lab) #+ "\t" + str(prob)
         text_out_file.write(output_data + "\n");
 
     text_out_file.close
 
 """
-Evaluate a batch data with given labels OFF and NOT_OFF
+Evaluate a batch data with given the reference labels
 """
 
 def evaluate(loaded_model, tokenizer, label_encoder, data_in_file,data_out_file,delim="\t"):
@@ -105,7 +105,7 @@ def evaluate(loaded_model, tokenizer, label_encoder, data_in_file,data_out_file,
             for lab, txt,idx, yt in zip(result,data,ids,labels):
                 # prob_per_class_dictionary = dict(zip(label_encoder.classes_, class_prob))
                 # prob = prob_per_class_dictionary.get(lab)
-                output_data=idx+"\t"+txt+"\t"+yt.trim()+"\t"+lab #+"\t"+str(prob)
+                output_data=idx+"\t"+txt+"\t"+map_labels(yt.trim())+"\t"+map_labels(lab) #+"\t"+str(prob)
                 text_out_file.write(output_data+"\n");
             data=[]
         count=count+1
@@ -121,7 +121,7 @@ def evaluate(loaded_model, tokenizer, label_encoder, data_in_file,data_out_file,
     for lab, txt,idx, yt in zip(result,data,ids,labels):
         # prob_per_class_dictionary = dict(zip(label_encoder.classes_, class_prob))
         # prob = prob_per_class_dictionary.get(lab)
-        output_data=idx+"\t"+txt+"\t"+yt.rstrip().lstrip()+"\t"+lab #+"\t"+str(prob)
+        output_data=idx+"\t"+txt+"\t"+map_labels(yt.rstrip().lstrip())+"\t"+map_labels(lab) #+"\t"+str(prob)
         text_out_file.write(output_data + "\n");
 
     text_out_file.close
@@ -148,7 +148,7 @@ def predict_single_item(loaded_model, tokenizer, label_encoder, text):
     lab=result[0]
     # prob = prob_per_class_dictionary.get(lab)
 
-    return lab #,prob
+    return map_labels(lab) #,prob
 
 def read_config(configfile):
     configdict = {}
@@ -180,6 +180,27 @@ def load_models(config_dictionary):
 
     return loaded_model, tokenizer, label_encoder
 
+
+"""
+Mapping Labels to readable format:
+"""
+Label_mapping={
+"art-and-entertainment":"Culture, Art and Entertainment" ,
+"business-and-economy" : "Business and Economy",
+"crime-war-conflict" : "Crime, War and Conflict",
+"education" : "Education",
+"environment" : "Environment",
+"health" : "Health",
+"human-rights-press-freedom" : "Human Rights and Freedom of Speech",
+"others" : "Other Categories",
+"politics" : "Politics",
+"science-and-technology" : "Science and Technology",
+"spiritual" : "Religion",
+"sports" : "Sports"
+}
+
+def map_labels(lab):
+    return Label_mapping[lab]
 
 if __name__ == '__main__':
     parser = optparse.OptionParser()

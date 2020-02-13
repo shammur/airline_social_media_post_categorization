@@ -76,7 +76,7 @@ def read_data_for_evaluation(filename, header=True,delim="\t"):
             next(f)
         for line in f:
             row =line.split(delim)
-            # row should have 2 entries -- ID \t Text_Content
+            # row should have 3 entries -- ID \t Text_Content \t Ref_Class_Label
             row_id = row[0]
             text = row[1]
             lab = row[2].lstrip().rstrip()

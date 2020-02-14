@@ -6,7 +6,7 @@ Created on Sun June  2 10:33:22 2019
 
 @author: Shammur A Chowdhury
 
-For Arabic News Short Text
+For English News Short Text
 """
 
 import os
@@ -17,39 +17,30 @@ import pandas as pd
 from nltk import tokenize
 
 import spacy
-from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 import string
-from sklearn.utils import shuffle
-
 from emoji import UNICODE_EMOJI
+from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
-import string
+from nltk.stem.porter import *
+from nltk.stem import PorterStemmer
+
 from nltk.corpus import stopwords
 
+porter = PorterStemmer()
+import wordsegment as ws
+# ws.load()
+
+
 ################## Global Variable ##########################
-arb_stopwords = set(nltk.corpus.stopwords.words("arabic"))
+english_stopwords = set(stopwords.words('english'))
 
-arabic_diacritics = re.compile("""
-                             ّ    | # Tashdid
-                             َ    | # Fatha
-                             ً    | # Tanwin Fath
-                             ُ    | # Damma
-                             ٌ    | # Tanwin Damm
-                             ِ    | # Kasra
-                             ٍ    | # Tanwin Kasr
-                             ْ    | # Sukun
-                             ـ     # Tatwil/Kashida
-                         """, re.VERBOSE)
-
-arabic_punctuations = '''`÷×؛<>_()*&^%][ـ،/:"؟.,'{}~¦+|!”…“–ـ'''
-english_punctuations = string.punctuation
-punctuations_list = arabic_punctuations + english_punctuations
 
 #####################################################################
 
 ################## Data IO #######################################
 
 def read_data_for_classification(filename, header=True,delim="\t"):
+    # ws.load()
     ids = []
     data=[]
     with open(filename, 'rU') as f:
@@ -68,6 +59,7 @@ def read_data_for_classification(filename, header=True,delim="\t"):
 
 
 def read_data_for_evaluation(filename, header=True,delim="\t"):
+    # ws.load()
     ids = []
     data=[]
     labels = []
@@ -91,8 +83,7 @@ def read_data_for_evaluation(filename, header=True,delim="\t"):
 #####################################################################
 
 
-################## Data Processing for Arabic Text ############################
-
+################## Data Processing for English Text ############################
 
 def clean_content(line):
     if (isinstance(line, float)):
@@ -100,25 +91,40 @@ def clean_content(line):
     line.replace('\n', ' ')
     line = remove_emails(line)
     line = remove_urls(line)
-    nline = [w if '@' not in w else 'USERIDX' for w in line.split()]
-    line = ' '.join(nline)
-    line = line.replace('RT', '').replace('<LF>', '').replace('<br />','').replace('&quot;', '').replace('<url>', '')
 
+    # Check if # or @ is there with word
+    linelst = []
+
+    for w in line.split():
+        if ("#" in w or "@" in w):
+            # print(w)
+            linelst.append(' '.join(ws.segment(w)))
+        elif 'http' not in w:
+            linelst.append(w)
+    line = ' '.join(linelst)
 
     # add spaces between punc,
-    line = line.translate(str.maketrans({key: " {0} ".format(key) for key in punctuations_list}))
+    line = line.translate(str.maketrans({key: " {0} ".format(key) for key in string.punctuation}))
 
     # then remove punc,
-    translator = str.maketrans('', '', punctuations_list)
+
+    translator = str.maketrans('', '', string.punctuation)
     line = line.translate(translator)
 
-    line=remove_diacritics(normalize_arabic(line))
+    ## convert to lower case
+    line = line.lower()
 
-    line = remove_stopwords(line)
+    # stemming:
+    token_words = word_tokenize(line)
+    # token_words porter.stem(word)
+    stem_sentence = [word if not hasDigits(word) else '<NUM>' for word in token_words]
 
-    #replace number
-    nline = [word if not hasDigits(word) else '<NUM>' for word in line.split()]
-    line = ' '.join(nline)
+    stem_sentence = removeConsecutiveSameNum(stem_sentence)
+
+    line = " ".join(stem_sentence)
+
+    removed_stops = [w for w in line.split() if not w in english_stopwords and len(w) != 1]
+    line = ' '.join(removed_stops)
 
     return line
 
@@ -168,85 +174,6 @@ def removeConsecutiveSameNum(v):
     return lines
 
 def hasDigits(s):
-    return any( 48 <= ord(char) <= 57  or 1632 <= ord(char) <= 1641 for char in s)
+    return any( 48 <= ord(char) <= 57 for char in s)
 
-
-#Text Normalization
-def normalize_arabic(text):
-    text = re.sub("[إأآا]", "ا", text)
-    text = re.sub("ى", "ي", text)
-    text = re.sub("ؤ", "ء", text)
-    text = re.sub("ئ", "ء", text)
-    text = re.sub("ة", "ه", text)
-    text = re.sub("گ", "ك", text)
-    return text
-
-
-def remove_diacritics(text):
-    text = re.sub(arabic_diacritics, '', text)
-    return text
-
-def remove_stopwords(text):
-    filtered_sentence = [w for w in text.split() if not w in arb_stopwords]
-    return ' '.join(filtered_sentence)
-
-
-def remove_punctuations(text):
-    translator = str.maketrans('', '', punctuations_list)
-    return text.translate(translator)
-
-
-# Clean/Normalize Arabic Text Based on aravec
-def clean_content_aravec(line):
-
-    if (isinstance(line, float)):
-        return None
-    line.replace('\n', ' ')
-    line = remove_emails(line)
-    line = remove_urls(line)
-    line = line.replace('@User', '').replace('RT', '').replace('<LF>', '')
-
-    # Check if # or @ is there with word
-
-    # add spaces between punc,
-    line = line.translate(str.maketrans({key: " {0} ".format(key) for key in punctuations_list}))
-
-    # then remove punc,
-    # line = line.translate(str.maketrans({key: " {0} ".format(key) for key in string.punctuation}))
-    translator = str.maketrans('', '', punctuations_list)
-    line = line.translate(translator)
-
-    search = ["أ", "إ", "آ", "ة", "_", "-", "/", ".", "،", " و ", " يا ", '"', "ـ", "'", "ى", "\\", '\n', '\t',
-              '&quot;', '?', '؟', '!']
-    replace = ["ا", "ا", "ا", "ه", " ", " ", "", "", "", " و", " يا", "", "", "", "ي", "", ' ', ' ', ' ', ' ? ', ' ؟ ',
-               ' ! ']
-
-    # remove tashkeel
-    p_tashkeel = re.compile(r'[\u0617-\u061A\u064B-\u0652]')
-    line = re.sub(p_tashkeel, "", line)
-
-    # remove longation
-    p_longation = re.compile(r'(.)\1+')
-    subst = r"\1\1"
-    line = re.sub(p_longation, subst, line)
-
-    line = line.replace('وو', 'و')
-    line = line.replace('يي', 'ي')
-    line = line.replace('اا', 'ا')
-
-    for i in range(0, len(search)):
-        line = line.replace(search[i], replace[i])
-
-    # trim
-    line = line.strip()
-
-    return line
-
-
-def map_labels_off(lab):
-    label_maps = {"Non-Offensive": "NOT_OFF", "Offensive": "OFF"}
-    if lab in label_maps:
-        return label_maps[lab]
-    else:
-        return lab
 #####################################################################

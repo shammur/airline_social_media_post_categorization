@@ -185,18 +185,18 @@ def load_models(config_dictionary):
 Mapping Labels to readable format:
 """
 Label_mapping={
-"art-and-entertainment":"Culture, Art and Entertainment" ,
-"business-and-economy" : "Business and Economy",
-"crime-war-conflict" : "Crime, War and Conflict",
-"education" : "Education",
-"environment" : "Environment",
-"health" : "Health",
-"human-rights-press-freedom" : "Human Rights and Freedom of Speech",
-"others" : "Other Categories",
-"politics" : "Politics",
-"science-and-technology" : "Science and Technology",
-"spiritual" : "Religion",
-"sports" : "Sports"
+"aircrafts":"Aircrafts" ,
+"business_parnership" : "Business and Partnerships",
+"cabin_crew" : "Cabin Crew",
+"charity_programs" : "Charity Programs",
+"dest_and_airports" : "Destinations and Airports",
+"other" : "Other Categories",
+"events" : "Events",
+"food_and_comfort" : "Food and Comfort in Air",
+"promotion" : "Promotion",
+"branding" : "Branding",
+"sports" : "Sports",
+"travel_blogs" : "Travel Blogs"
 }
 
 def map_labels(lab):

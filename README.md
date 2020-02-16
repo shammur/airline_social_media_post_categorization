@@ -1,9 +1,8 @@
 
 
 # Airline Social Media Post Categorization model.
-This is a release includes model for categorizing topics (12 categories) for social media posts from comercial Airline companies, trained using posts from different online platforms of a well-know airline company. The model is trained on dataset collected from post 2015 social media (Twitter, Facebook, Youtube, Instagram).
+This release includes model for categorizing topics (12 categories) for social media posts from comercial Airline companies. The model is trained on dataset collected from different online platforms (e.g., Twitter, Facebook, Youtube) of a well-know airline company. It includes posts from 2016 to Jan, 2020.
 
-The model classifies a news post into either of these 12 categories.
 The categories are:
 * Aircrafts
 * Business and Partnerships
@@ -18,11 +17,8 @@ The categories are:
 * Travel Blogs
 * Others Categories - representing categories that are not mentioned above like travel blogs, news related to fashion among others.
 
-The model use a traditional SVM designed using word ngrams. The motivation for using Support Vector model is to handle the size and the imbalanced class distribution present in the dataset (see Table 2, for more details).
-The model is evaluated using:
-* 5-fold cross validation for evaluating in-domain data performance
 
-
+## Data Annotation
 To train the model, we annotated ~4500 amount of data.
 The contents are collected from the following sources:
 * Twitter
@@ -44,9 +40,13 @@ Containing details of data collection method, annotation guideline, with link to
 }
 ``` -->
 
-## Training the models
+## Model training and evaluation
+The model use a traditional SVM designed using word ngrams. The motivation for using Support Vector model is to handle the size and the imbalanced class distribution present in the dataset (see Table 2, for more details).
 
-### SVM
+The model is evaluated using:
+* 5-fold cross validation for evaluating in-domain data performance
+
+## SVM
 For the training the classifier with SVM, we used TF-IDF representations for word ngrams. The reason to choose SVM with TF-IDF is their simplicity, and effectiveness when dealing with imbalanced small dataset.
 
 ## Data Format
@@ -68,7 +68,7 @@ here predicted_class_label is the output of the model
 The output are mapped to make label for readable (see Table 2 for more details).
 
 
-## Predicting using the models
+## Prediction using the models
 To run the classification model please use python version 3.7, install dependencies
 
 To install the requirements:
@@ -96,7 +96,7 @@ Example:
 python bin/prediction_model.py.py -c models/ar_offensive_detection_svm.config -d sample_data/sample_tst_with_ref.tsv -o results/sample_tst_predicted.tsv --eval yes
 ```
 
-### Classification Results
+## Classification Results
 
 As mentioned earlier, the performance of the model is tested using 5-fold CV on training data
 

@@ -47,7 +47,7 @@ Containing details of data collection method, annotation guideline, with link to
 ## Training the models
 
 ### SVM
-For the training the classifier with SVM, we used TF-IDF representations for word ngrams. The reason to choose SVM with TF-IDF is their simplicity.
+For the training the classifier with SVM, we used TF-IDF representations for word ngrams. The reason to choose SVM with TF-IDF is their simplicity, and effectiveness when dealing with imbalanced small dataset.
 
 ## Data Format
 ### Input data format

@@ -106,13 +106,13 @@ Table 1: Overall Performance of the model on cross-validation
 Overall| Macro	F1| Weighted F1
 --------| :------: | :------:
 CV-Exp | 0.57 | 0.69
-Total Instances	| 56453 |	1103
+Total Instances	| 4404 |	-
 
 
 Table 2: Class wise Performance of the model on cross-validation
 
 Output |	Classes	 | CV-Exp |	# In Train Set
-------------| :------: | :------: | :------:| :------: | :------:
+------------| :------: | :------: | :------:
 Aircrafts | aircrafts | 0.72 | 278
 Branding | branding | 0.3 | 143
 Business and Partnerships | business_parnership | 0.4 | 135
